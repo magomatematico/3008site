@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Palpites com Afiliados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+        .iframe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 2;
+        }
+        .content-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+            z-index: 3;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        button.gerar-palpites {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+        button.gerar-palpites:hover {
+            background-color: #218838;
+        }
+        #palpitesContainer {
+            width: 90%;
+            max-width: 600px;
+            background-color: white;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .palpite {
+            padding: 6px 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            text-align: center;
+        }
+        .palpite:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        a.affiliate-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        a.affiliate-link:hover {
+            background-color: #0056b3;
+        }
+        .backlink {
+            text-align: justify;
+            padding: 5px 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: auto;
+            display: inline-block;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            user-select: none;
+            z-index: 1000;
+        }
+        a.backlink-a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a.backlink-a:hover {
+            text-decoration: underline;
+        }
+        .close-btn {
+            display: inline-block;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #ff0000;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            #palpitesContainer {
+                width: 95%;
+                max-height: calc(100vh - 80px);
+                padding: 8px;
+            }
+            .palpite {
+                font-size: 12px;
+                padding: 5px 8px;
+            }
+            button.gerar-palpites {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            a.affiliate-link {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+            .backlink {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    </div>
+    <div class="content-container">
+        <button class="gerar-palpites">Gerar Palpites</button>
+        <div id="palpitesContainer"></div>
+        <a href="https://www.aguiaoficialbet.com/?aff=seuID" target="_blank" rel="noopener noreferrer" class="affiliate-link">Aposte agora no Águia Oficial Bet!</a>
+    </div>
+    <div class="backlink">
+        <p style="margin: 0; display: inline;">Visite: <a href="https://www.aguiaoficialbet.com/" target="_blank" rel="noopener noreferrer" class="backlink-a">Águia Oficial Bet</a></p>
+        <span class="close-btn" onclick="this.parentElement.style.display='none'">✖</span>
+    </div>
+
+    <script>
+        const tabelaBichos = [
+            { grupo: 1, nome: "AVESTRUZ", emoji: "🦒", dezenas: ["01", "02", "03", "04"] },
+            { grupo: 2, nome: "ÁGUIA", emoji: "🦅", dezenas: ["05", "06", "07", "08"] },
+            { grupo: 3, nome: "BURRO", emoji: "🫏", dezenas: ["09", "10", "11", "12"] },
+            { grupo: 4, nome: "BORBOLETA", emoji: "🦋", dezenas: ["13", "14", "15", "16"] },
+            { grupo: 5, nome: "CACHORRO", emoji: "🐶", dezenas: ["17", "18", "19", "20"] },
+            { grupo: 6, nome: "CABRA", emoji: "🐐", dezenas: ["21", "22", "23", "24"] },
+            { grupo: 7, nome: "CARNEIRO", emoji: "🐑", dezenas: ["25", "26", "27", "28"] },
+            { grupo: 8, nome: "CAMELO", emoji: "🐪", dezenas: ["29", "30", "31", "32"] },
+            { grupo: 9, nome: "COBRA", emoji: "🐍", dezenas: ["33", "34", "35", "36"] },
+            { grupo: 10, nome: "COELHO", emoji: "🐰", dezenas: ["37", "38", "39", "40"] },
+            { grupo: 11, nome: "CAVALO", emoji: "🐎", dezenas: ["41", "42", "43", "44"] },
+            { grupo: 12, nome: "ELEFANTE", emoji: "🐘", dezenas: ["45", "46", "47", "48"] },
+            { grupo: 13, nome: "GALO", emoji: "🐓", dezenas: ["49", "50", "51", "52"] },
+            { grupo: 14, nome: "GATO", emoji: "🐱", dezenas: ["53", "54", "55", "56"] },
+            { grupo: 15, nome: "JACARÉ", emoji: "🐊", dezenas: ["57", "58", "59", "60"] },
+            { grupo: 16, nome: "LEÃO", emoji: "🦁", dezenas: ["61", "62", "63", "64"] },
+            { grupo: 17, nome: "MACACO", emoji: "🐒", dezenas: ["65", "66", "67", "68"] },
+            { grupo: 18, nome: "PORCO", emoji: "🐷", dezenas: ["69", "70", "71", "72"] },
+            { grupo: 19, nome: "PAVÃO", emoji: "🦚", dezenas: ["73", "74", "75", "76"] },
+            { grupo: 20, nome: "PERU", emoji: "🦃", dezenas: ["77", "78", "79", "80"] },
+            { grupo: 21, nome: "TOURO", emoji: "🐂", dezenas: ["81", "82", "83", "84"] },
+            { grupo: 22, nome: "TIGRE", emoji: "🐅", dezenas: ["85", "86", "87", "88"] },
+            { grupo: 23, nome: "URSO", emoji: "🐻", dezenas: ["89", "90", "91", "92"] },
+            { grupo: 24, nome: "VEADO", emoji: "🦌", dezenas: ["93", "94", "95", "96"] },
+            { grupo: 25, nome: "VACA", emoji: "🐄", dezenas: ["97", "98", "99", "00"] }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.gerar-palpites').addEventListener('click', gerarPalpites);
+        });
+
+        function gerarPalpites() {
+            const bichosSelecionados = tabelaBichos
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 4);
+
+            const palpites = [];
+            bichosSelecionados.forEach(bicho => {
+                for (let i = 0; i < 3; i++) {
+                    const dezena = bicho.dezenas[Math.floor(Math.random() * bicho.dezenas.length)];
+                    const primeirosDois = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                    const numero = primeirosDois + dezena;
+                    palpites.push({
+                        numero,
+                        grupo: bicho.grupo.toString().padStart(2, '0'),
+                        nome: bicho.nome,
+                        emoji: bicho.emoji
+                    });
+                }
+            });
+
+            let palpitesHTML = '';
+            palpites.forEach(palpite => {
+                palpitesHTML += `
+                    <div class="palpite">
+                        ${palpite.numero} - ${palpite.nome} (GRUPO ${palpite.grupo})${palpite.emoji}
+                    </div>
+                `;
+            });
+
+            document.getElementById('palpitesContainer').innerHTML = palpitesHTML;
+        }
+    </script>
+</body>
+</html>
